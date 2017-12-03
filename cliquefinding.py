@@ -62,8 +62,8 @@ def bron_kerbosch(graph, R, P, X):
             cliques += clique_found
 
         # Update
-        P = [vert for vert in P if vert != v]
-        X.append(v)
+        P = subtract(P, [v])
+        X = union(X, [v])
     return cliques
 
 if __name__ == '__main__':
