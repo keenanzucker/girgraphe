@@ -73,7 +73,4 @@ if __name__ == '__main__':
                 [0, 1, 0, 1],
                 [0, 1, 1, 0]]
     g = Graph(vertices, adj_mat)
-    try:
-        print bron_kerbosch(g, [], vertices, [])
-    except RuntimeError:
-        print "Ended"
+    print bron_kerbosch(g, [], vertices, [])
