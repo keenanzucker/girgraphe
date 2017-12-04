@@ -43,5 +43,5 @@ if __name__ == "__main__":
     t = time.time()  # Start time
     maker = GraphMaker('bolt://127.0.0.1:7687')  # URI needed to use neo4j
     maker.start()
-    # maker.purge()
+    # maker.purge()  # Use this to clear out database
     print time.time() - t  # Total time
