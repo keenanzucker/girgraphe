@@ -97,7 +97,6 @@ class Crawler(object):
             pickle.dump(self.graph, f, protocol=pickle.HIGHEST_PROTOCOL)
 
         print "Pickling finished in %f seconds" % (time.time() - start_time)
-        # self._driver.close()  # Closing neo4j driver
 
 
 if __name__ == "__main__":
