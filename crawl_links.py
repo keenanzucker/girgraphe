@@ -58,10 +58,10 @@ class Crawler(object):
         print "Starting pickle process"  # Save data seen so far
         start_time = time.time()
 
-        with open('data.pickle', 'wb') as f:
+        with open('data-olin.pickle', 'wb') as f:
             pickle.dump(self.link_to, f, protocol=pickle.HIGHEST_PROTOCOL)
 
-        with open('graph.pickle', 'wb') as f:
+        with open('graph-olin.pickle', 'wb') as f:
             pickle.dump(self.graph, f, protocol=pickle.HIGHEST_PROTOCOL)
 
         print "Pickling finished in %f seconds" % (time.time() - start_time)
@@ -71,6 +71,6 @@ if __name__ == "__main__":
     t = time.time()  # Start time
 
     c = Crawler('bolt://127.0.0.1:7687')  # URI needed to use neo4j
-    c.start('Kellia')
+    c.start('Franklin W. Olin College of Engineering')
 
     print time.time() - t  # Total time

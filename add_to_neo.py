@@ -9,9 +9,9 @@ class GraphMaker(object):
     def __init__(self, uri, data='data.pickle', graph='graph.pickle'):
         self._driver = GraphDatabase.driver(uri)  # commented out temporarily
 
-        with open('data.pickle', 'rb') as f:
+        with open('data-olin.pickle', 'rb') as f:
             self.link_to = pickle.load(f)
-        with open('graph.pickle', 'rb') as f:
+        with open('graph-olin.pickle', 'rb') as f:
             self.graph = pickle.load(f)
 
     def start(self):
