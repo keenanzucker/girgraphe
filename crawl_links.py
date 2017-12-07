@@ -3,13 +3,11 @@ import pickle
 
 from tqdm import tqdm
 import wikipedia
-from neo4j.v1 import GraphDatabase
 
 
 class Crawler(object):
 
     def __init__(self, uri):
-        # self._driver = GraphDatabase.driver(uri)  # commented out temporarily
         self.searched = set()
         self.link_to = dict()
         self.graph = dict()
@@ -46,26 +44,6 @@ class Crawler(object):
                         self.graph[child_topic] = child_topic_links
                         break
 
-        # Different version of scraper, keeping for one commit for reference.
-        # while len(self.graph.keys()) < 200:
-        #     topic = self.queue.pop()
-        #     if topic in self.searched:
-        #         print "\n\n!*!*!*!* Already searched %s \n\n" % topic
-        #         continue
-
-        #     new_links = self.get_links(topic)
-        #     self.link_to[topic] = new_links
-        #     if set.intersection(new_links, self.graph.keys()):
-        #         self.graph[topic] = new_links
-        #         self.queue
-        #     self.queue.update(new_links)
-        #     self.queue -= self.searched
-        #     self.searched.add(topic)
-
-        #     print "Topic: %s, searched so far: %s, links: %i" % (
-        #         topic, len(self.searched), len(self.queue)
-        #     )
-
         self.close()
 
     def get_links(self, topic):
@@ -74,16 +52,6 @@ class Crawler(object):
         except (wikipedia.exceptions.PageError, wikipedia.exceptions.DisambiguationError) as e:
             links = []
             print e
-
-        # neo4j command to get Article node and build relevant connections,
-        # temporarily commented but leaving as reference.
-        # with self._driver.session() as session:
-        #     with session.begin_transaction() as tx:
-        #         for link in links:
-        #             tx.run('MERGE (start:Article {title: "%s"}) \
-        #                 MERGE (target:Article {title: "%s"}) \
-        #                 MERGE (start)-[:LIKES]->(target);' % (topic, link))
-
         return set(links)
 
     def close(self):
