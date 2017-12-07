@@ -1,20 +1,26 @@
-import random
+import random, pickle
+from neo4j.v1 import GraphDatabase
 
 class Graph:
-    def __init__(self, vertices, adjacency_matrix):
-        self.vertices = vertices
-        self.adjacency_matrix = adjacency_matrix
+    def __init__(self, uri, data='data.pickle', graph='graph.pickle'):
+        self._driver = GraphDatabase.driver(uri, auth=('neo4j', 'password'))  # commented out temporarily
 
-def find_adjacent_vertices(vertex, graph):
-    vertex_index = -1
-    for i in range(len(graph.vertices)):
-        if graph.vertices[i] == vertex:
-            vertex_index = i
-            break
-    if vertex_index == -1:
-        return []
-    adj_mat = graph.adjacency_matrix[vertex_index]
-    return [graph.vertices[i] for i in range(len(adj_mat)) if adj_mat[i] == 1]
+        with open('data.pickle', 'rb') as f:
+            self.link_to = pickle.load(f)
+        with open('graph.pickle', 'rb') as f:
+            self.graph = pickle.load(f)
+
+    def vertices(self):
+        return self.graph.keys()
+
+    def find_adjacent_vertices(self, vertex):
+        with self._driver.session() as session:
+            with session.begin_transaction() as tx:
+                links_to = tx.run('MATCH (s: Article)-[:LINKS_TO]->(article: Article {title: "%s"}) RETURN s' % vertex)
+                links_from = tx.run('MATCH (s: Article {title: "%s"})-[:LINKS_TO]->(article: Article) RETURN article' % vertex)
+        titles_to = [r[0]['title'] for r in links_to.records()]
+        titles_from = [r[0]['title'] for r in links_from.records()]
+        return intersection(titles_to, titles_from)
 
 def intersection(set1, set2):
     set1_dict = {key: True for key in set1}
@@ -47,11 +53,11 @@ def bron_kerbosch(graph, R, P, X):
     # Set up pivoting
     pivot_candidates = union(P, X) 
     pivot = pivot_candidates[random.randrange(0, len(pivot_candidates))]
-    adj_pivot = find_adjacent_vertices(pivot, graph)
+    adj_pivot = graph.find_adjacent_vertices(pivot)
     n_u = subtract(P, adj_pivot)
     for v in n_u:
         # Get new parameters
-        adjacent_vertices = find_adjacent_vertices(v, graph)
+        adjacent_vertices = graph.find_adjacent_vertices(v)
         newR = union(R, [v])
         newP = intersection(P, adjacent_vertices)
         newX = intersection(X, adjacent_vertices)
@@ -66,11 +72,24 @@ def bron_kerbosch(graph, R, P, X):
         X = union(X, [v])
     return cliques
 
+def create_new_graph(cliques):
+    current_letter = 65
+    vertices = []
+    for c in cliques:
+        if len(c) > 1:
+            vertices.append((chr(current_letter), c))
+            current_letter += 1
+    adj_mat = [[0 for i in range(len(vertices))] for i in range(len(vertices))] 
+    for i in range(len(vertices)):
+        for j in range(i+1, len(vertices)):
+            weight = len(intersection(vertices[i][1], vertices[j][1]))
+            adj_mat[i][j] = weight 
+            adj_mat[j][i] = weight 
+    return vertices, adj_mat
+
 if __name__ == '__main__':
-    vertices = ["v0", "v1", "v2", "v3"]
-    adj_mat = [[0, 1, 0, 0],
-                [1, 0, 1, 1],
-                [0, 1, 0, 1],
-                [0, 1, 1, 0]]
-    g = Graph(vertices, adj_mat)
-    print bron_kerbosch(g, [], vertices, [])
+    g = Graph('bolt://localhost:7687')
+    cliques = bron_kerbosch(g, [], g.vertices(), [])
+    g = create_new_graph(cliques)
+    print g[0] 
+    print g[1]
