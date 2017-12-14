@@ -90,15 +90,15 @@ def golf(start, searchWord):
 						seen.append(link)
 
 						# MODIFIED: To get deeper results faster, only choose 1/20 links
-						# if random.randrange(0,20) == 10:
-						# 	queue.append({'word': link, 'parent': vertex.value})
+						if random.randrange(0,20) == 0:
+							queue.append({'word': link, 'parent': vertex.value})
 
 						# MODIFIED 2: Only add links with fewer letters
 						# if len(link) < 10:
 						# 	queue.append({'word': link, 'parent': vertex.value})
 
 						# ORIGINAL
-						queue.append({'word': link, 'parent': vertex.value})
+						# queue.append({'word': link, 'parent': vertex.value})
 
 
 def find_shortest_path(path):
@@ -121,8 +121,8 @@ def find_shortest_path(path):
 # sort by smallest number of letters
 
 # Good graph to start: Pkhyan --> Namli Maira --> Abbottabad --> Major James Abbott
-startWord = "Pkhyan"
-searchWord = "Major James Abbott"
+startWord = "Giraffe"
+searchWord = "Graph"
 
 print golf(startWord, searchWord)
 
