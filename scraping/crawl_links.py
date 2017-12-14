@@ -58,10 +58,10 @@ class Crawler(object):
         print "Starting pickle process"  # Save data seen so far
         start_time = time.time()
 
-        with open('data-olin.pickle', 'wb') as f:
+        with open('../data/data-olin.pickle', 'wb') as f:
             pickle.dump(self.link_to, f, protocol=pickle.HIGHEST_PROTOCOL)
 
-        with open('graph-olin.pickle', 'wb') as f:
+        with open('../data/graph-olin.pickle', 'wb') as f:
             pickle.dump(self.graph, f, protocol=pickle.HIGHEST_PROTOCOL)
 
         print "Pickling finished in %f seconds" % (time.time() - start_time)

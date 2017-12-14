@@ -1,13 +1,14 @@
 import random, pickle
 from neo4j.v1 import GraphDatabase
 
-class Graph:
+
+class Graph(object):
     def __init__(self, uri, data='data.pickle', graph='graph.pickle'):
         self._driver = GraphDatabase.driver(uri, auth=('neo4j', 'password'))  # commented out temporarily
 
-        with open('data.pickle', 'rb') as f:
+        with open('../data/' + data, 'rb') as f:
             self.link_to = pickle.load(f)
-        with open('graph.pickle', 'rb') as f:
+        with open('../data/' + graph, 'rb') as f:
             self.graph = pickle.load(f)
 
     def vertices(self):
